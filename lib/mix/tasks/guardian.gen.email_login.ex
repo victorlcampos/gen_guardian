@@ -6,8 +6,8 @@ defmodule Mix.Tasks.Guardian.Gen.EmailLogin do
   def run(args) do
     switches = []
 
-    {opts, parsed, _} = OptionParser.parse(args, switches: switches)
-    [singular, plural | attrs] = validate_args!(parsed)
+    {_opts, parsed, _} = OptionParser.parse(args, switches: switches)
+    [singular, _plural | _attrs] = validate_args!(parsed)
 
     binding   = Mix.Phoenix.inflect(singular)
     path      = binding[:path]
@@ -36,6 +36,9 @@ defmodule Mix.Tasks.Guardian.Gen.EmailLogin do
         args
     end
   end
+  defp validate_args!(_) do
+    raise_with_help
+  end
 
   defp raise_with_help do
     Mix.raise """
@@ -46,11 +49,15 @@ defmodule Mix.Tasks.Guardian.Gen.EmailLogin do
     """
   end
 
-  defp validate_args!(_) do
-    raise_with_help
-  end
-
   defp paths() do
     [".", :gen_guardian]
   end
+
+  defp timestamp do
+    {{y, m, d}, {hh, mm, ss}} = :calendar.universal_time()
+    "#{y}#{pad(m)}#{pad(d)}#{pad(hh)}#{pad(mm)}#{pad(ss)}"
+  end
+
+  defp pad(i) when i < 10, do: << ?0, ?0 + i >>
+  defp pad(i), do: to_string(i)
 end
