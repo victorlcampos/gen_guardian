@@ -1,0 +1,9 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1>Current User</h1>
+    <p>
+      <%= "<%=" %> @user.email <%= "%\>" %>
+    </p>
+    <%= "<%=" %> link "Log out", to: sign_out_path(@conn, :delete) <%= "%\>" %>
+  </div>
+</div>

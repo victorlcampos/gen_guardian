@@ -14,13 +14,43 @@ defmodule Mix.Tasks.Guardian.Gen.EmailLogin do
 
     files = [
       {:eex, "guardian_serializer.ex", "lib/#{path}/guardian_serializer.ex"},
-      {:eex, "migration.exs", "priv/repo/migrations/#{timestamp()}_create_user.exs"}
+      {:eex, "migration.exs", "priv/repo/migrations/#{timestamp()}_create_user.exs"},
+      {:eex, "user.ex", "web/models/user.ex"},
+      {:eex, "session_controller.ex", "web/controllers/session_controller.ex"},
+      {:eex, "session_view.ex", "web/views/session_view.ex"},
+      {:eex, "session_new.html.eex", "web/templates/session/new.html.eex"},
+      {:eex, "user_controller.ex", "web/controllers/user_controller.ex"},
+      {:eex, "user_view.ex", "web/views/user_view.ex"},
+      {:eex, "user_new.html.eex", "web/templates/user/new.html.eex"},
+      {:eex, "user_show.html.eex", "web/templates/user/show.html.eex"},
     ]
 
     Mix.Phoenix.copy_from paths(), "priv/templates/guardian.gen.email_login", "", binding, files
 
     Mix.shell.info """
-    Remember to update your repository by running migrations:
+    Add browser_session pipeline to route config
+
+      pipeline :browser_session do
+        plug Guardian.Plug.VerifySession
+        plug Guardian.Plug.LoadResource
+      end
+
+      scope "/", AppName do
+        pipe_through [:browser, :browser_session] # Use the default browser stack
+
+        get    "/sign_in" , SessionController, :new   , as: :sign_in
+        post   "/sign_in" , SessionController, :create, as: :sign_in
+        put    "/sign_in" , SessionController, :create, as: :sign_in
+
+        get    "/sign_out", SessionController, :delete, as: :sign_out
+        delete "/sign_out", SessionController, :delete, as: :sign_out
+
+        get    "/sign_up" , UserController, :new   , as: :sign_up
+        post   "/sign_up" , UserController, :create, as: :sign_up
+
+        get    "/user"   , UserController, :show  , as: :user
+      end
+    and remember to update your repository by running migrations:
 
       $ mix ecto.migrate
     """
