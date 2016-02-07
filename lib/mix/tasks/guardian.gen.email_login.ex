@@ -40,7 +40,6 @@ defmodule Mix.Tasks.Guardian.Gen.EmailLogin do
 
         get    "/sign_in" , SessionController, :new   , as: :sign_in
         post   "/sign_in" , SessionController, :create, as: :sign_in
-        put    "/sign_in" , SessionController, :create, as: :sign_in
 
         get    "/sign_out", SessionController, :delete, as: :sign_out
         delete "/sign_out", SessionController, :delete, as: :sign_out

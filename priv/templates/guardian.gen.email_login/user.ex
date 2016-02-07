@@ -16,6 +16,24 @@ defmodule <%= base %>.User do
     from u in query, where: u.email == ^email
   end
 
+  def validate_password(nil, params),  do: validate_password(%{}, params)
+  def validate_password(model, params) do
+    changeset = login_changeset(model, params)
+
+    if changeset.valid? do
+      {:ok, model}
+    else
+      {:error, changeset}
+    end
+  end
+
+  def  login_changeset(model), do: model |> cast(%{}, ~w(), @fields)
+  defp login_changeset(model, params) do
+    %Phoenixcast.User{encrypted_password: model.encrypted_password}
+    |> cast(params, @fields, ~w())
+    |> do_validate_password
+  end
+
   def save_changeset(model), do: model |> cast(%{}, ~w(), @fields)
   def save_changeset(model, params) do
     model
@@ -24,13 +42,6 @@ defmodule <%= base %>.User do
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 5)
     |> maybe_update_password
-  end
-
-  def login_changeset(model), do: model |> cast(%{}, ~w(), @fields)
-  def login_changeset(model, params) do
-    model
-    |> cast(params, ~w(email password), ~w())
-    |> validate_password
   end
 
   def valid_password?(nil, _), do: false
@@ -46,14 +57,14 @@ defmodule <%= base %>.User do
     end
   end
 
-  defp validate_password(changeset) do
+  defp do_validate_password(changeset) do
     case Ecto.Changeset.get_field(changeset, :encrypted_password) do
       nil -> password_incorrect_error(changeset)
-      crypted -> validate_password(changeset, crypted)
+      crypted -> do_validate_password(changeset, crypted)
     end
   end
 
-  defp validate_password(changeset, crypted) do
+  defp do_validate_password(changeset, crypted) do
     password = Ecto.Changeset.get_change(changeset, :password)
     if valid_password?(password, crypted), do: changeset, else: password_incorrect_error(changeset)
   end
