@@ -49,9 +49,21 @@ defmodule Mix.Tasks.Guardian.Gen.EmailLogin do
 
         get    "/user"   , UserController, :show  , as: :user
       end
-    and remember to update your repository by running migrations:
+
+    , remember to update your repository by running migrations:
 
       $ mix ecto.migrate
+
+    and add comeonin in deps:
+      def deps do
+        [
+          #...
+          {:comeonin, "~> 2.0"},
+          #...
+        ]
+      end
+
+      mix deps.get
     """
   end
 

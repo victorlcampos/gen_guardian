@@ -7,8 +7,12 @@ Nice generators for Guardian
   1. Add gen_guardian to your list of dependencies in `mix.exs`:
     ```elixir
       def deps do
-        [{:gen_guardian, git: "https://github.com/victorlcampos/gen_guardian", only: :dev},
-          {:comeonin, "~> 2.0"}]
+        [
+          #...
+          {:guardian, "~> 0.9.0"},
+          {:gen_guardian, git: "https://github.com/victorlcampos/gen_guardian", only: :dev},
+          #...
+        ]
       end
     ```
 

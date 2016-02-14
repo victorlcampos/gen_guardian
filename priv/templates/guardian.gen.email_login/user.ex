@@ -16,7 +16,7 @@ defmodule <%= base %>.User do
     from u in query, where: u.email == ^email
   end
 
-  def validate_password(nil, params),  do: validate_password(%{}, params)
+  def validate_password(nil, params),  do: validate_password(%<%= base %>.User{}, params)
   def validate_password(model, params) do
     changeset = login_changeset(model, params)
 
@@ -29,7 +29,7 @@ defmodule <%= base %>.User do
 
   def  login_changeset(model), do: model |> cast(%{}, ~w(), @fields)
   defp login_changeset(model, params) do
-    %Phoenixcast.User{encrypted_password: model.encrypted_password}
+    %<%= base %>.User{encrypted_password: model.encrypted_password}
     |> cast(params, @fields, ~w())
     |> do_validate_password
   end
